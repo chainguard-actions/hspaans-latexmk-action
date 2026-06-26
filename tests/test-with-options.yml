@@ -1,0 +1,33 @@
+---
+name: Test compilation with extra options
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create minimal LaTeX file
+        run: |
+          cat > "$GITHUB_WORKSPACE/main.tex" << 'EOF'
+          \documentclass{article}
+          \begin{document}
+          Options test document.
+          \end{document}
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          format: pdf
+          filename: main.tex
+          options: "-silent"
+
+      - name: Assert PDF was generated with options
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/main.pdf" ]; then
+            echo "FAIL: expected main.pdf to be generated when using extra options"
+            exit 1
+          fi
+          echo "PASS: main.pdf was generated with extra options"
