@@ -1,0 +1,33 @@
+name: Test custom filename
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create custom tex file in workspace
+        run: |
+          cat > "$GITHUB_WORKSPACE/custom.tex" << 'EOF'
+          \documentclass{article}
+          \begin{document}
+          Custom filename test document.
+          \end{document}
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          format: pdf
+          filename: custom.tex
+
+      - name: Assert PDF was generated with custom filename
+        run: |
+          echo "Listing workspace contents:"
+          ls -la "$GITHUB_WORKSPACE/"
+          if [ ! -f "$GITHUB_WORKSPACE/custom.pdf" ]; then
+            echo "FAIL: expected custom.pdf to be generated"
+            exit 1
+          fi
+          echo "PASS: custom.pdf was generated"
