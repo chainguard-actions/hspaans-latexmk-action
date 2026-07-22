@@ -1,4 +1,5 @@
-name: Test custom filename
+---
+name: Test custom filename compilation
 on:
   workflow_dispatch:
 jobs:
@@ -7,27 +8,22 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create custom tex file in workspace
+      - name: Copy fixture LaTeX file to workspace root
         run: |
-          cat > "$GITHUB_WORKSPACE/custom.tex" << 'EOF'
-          \documentclass{article}
-          \begin{document}
-          Custom filename test document.
-          \end{document}
-          EOF
+          cp "$GITHUB_WORKSPACE/tests/fixtures/article.tex" "$GITHUB_WORKSPACE/article.tex"
 
-      - id: action
+      - name: Run latexmk action with custom filename
         uses: .
         with:
           format: pdf
-          filename: custom.tex
+          filename: article.tex
 
-      - name: Assert PDF was generated with custom filename
+      - name: Assert PDF was generated for custom filename
         run: |
-          echo "Listing workspace contents:"
+          echo "Checking for generated PDF..."
           ls -la "$GITHUB_WORKSPACE/"
-          if [ ! -f "$GITHUB_WORKSPACE/custom.pdf" ]; then
-            echo "FAIL: expected custom.pdf to be generated"
+          if [ ! -f "$GITHUB_WORKSPACE/article.pdf" ]; then
+            echo "FAIL: expected article.pdf to be generated but it was not found"
             exit 1
           fi
-          echo "PASS: custom.pdf was generated"
+          echo "PASS: article.pdf was successfully generated from custom filename"

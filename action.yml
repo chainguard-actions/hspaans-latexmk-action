@@ -20,7 +20,7 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/hspaans/latexmk-action@sha256:6a184a9675f159b474b4d5001e4ae328686befd19029bf0903f2ad35c07e0f27' # 2.1
+  image: 'docker://ghcr.io/hspaans/latexmk-action:2.1@sha256:6a184a9675f159b474b4d5001e4ae328686befd19029bf0903f2ad35c07e0f27'
   env:
     ACTION_FORMAT: ${{ inputs.format }}
     ACTION_FILENAME: ${{ inputs.filename }}
