@@ -15,7 +15,7 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/hspaans/latexmk-action@sha256:2f207ff4697812da898497a931ce358ffe0e600c66e892584f5d6c9d27dbb137' # :1
+  image: 'docker://ghcr.io/hspaans/latexmk-action:1@sha256:2f207ff4697812da898497a931ce358ffe0e600c66e892584f5d6c9d27dbb137'
   env:
     ACTION_FORMAT: ${{ inputs.format }}
     ACTION_FILENAME: ${{ inputs.filename }}

@@ -1,4 +1,5 @@
-name: Test basic PDF compilation
+---
+name: Test basic PDF compilation (default filename)
 on:
   workflow_dispatch:
 jobs:
@@ -6,28 +7,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Create tex file in workspace root
+
+      - name: Copy fixture LaTeX file to workspace root
         run: |
-          cat > "$GITHUB_WORKSPACE/main.tex" << 'EOF'
-          \documentclass{article}
-          \begin{document}
-          Hello, World!
-          \end{document}
-          EOF
-          echo "Created main.tex:"
-          cat "$GITHUB_WORKSPACE/main.tex"
-          ls -la "$GITHUB_WORKSPACE/"
+          cp "$GITHUB_WORKSPACE/tests/fixtures/main.tex" "$GITHUB_WORKSPACE/main.tex"
+
       - id: action
         uses: .
         with:
           format: pdf
           filename: main.tex
+
       - name: Assert PDF was generated
         run: |
-          echo "Workspace contents after action:"
-          ls -la "$GITHUB_WORKSPACE/" || true
           if [ ! -f "$GITHUB_WORKSPACE/main.pdf" ]; then
-            echo "FAIL: expected main.pdf to be generated"
+            echo "FAIL: expected main.pdf to be generated but it was not found"
+            ls -la "$GITHUB_WORKSPACE/" || true
             exit 1
           fi
-          echo "PASS: main.pdf was generated"
+          echo "PASS: main.pdf was successfully generated"
+          ls -lh "$GITHUB_WORKSPACE/main.pdf"

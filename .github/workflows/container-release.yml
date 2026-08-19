@@ -1,0 +1,22 @@
+---
+name: Container Release
+
+on:
+  push:
+    branches:
+      - master
+      - v*
+    tags:
+      - v*
+
+permissions: {}
+
+jobs:
+  reusable-workflow:
+    name: Reusable workflow
+    uses: hspaans/.github/.github/workflows/container-release.yml@880d91388b14f0155475ac3d961e4aa6d0225df8 # master
+    with:
+      actor: ${{ github.actor }}
+      platforms: linux/amd64,linux/arm64
+    secrets:
+      access_token: ${{ secrets.GITHUB_TOKEN }}
