@@ -1,5 +1,5 @@
 ---
-name: Test basic PDF compilation
+name: Test compilation with latexmkrc file
 on:
   workflow_dispatch:
 jobs:
@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Write LaTeX source file to workspace root
+      - name: Write LaTeX source and latexmkrc to workspace root
         run: |
           cat > "$GITHUB_WORKSPACE/main.tex" << 'EOF'
           \documentclass{article}
@@ -20,8 +20,11 @@ jobs:
           Hello, World! This is a test document for latexmk-action.
           \end{document}
           EOF
-          echo "Created main.tex:"
-          ls -la "$GITHUB_WORKSPACE/main.tex"
+          printf '$pdf_mode = 1;\n$postscript_mode = 0;\n$dvi_mode = 0;\n' > "$GITHUB_WORKSPACE/latexmkrc"
+          echo "Files in workspace root:"
+          ls -la "$GITHUB_WORKSPACE/main.tex" "$GITHUB_WORKSPACE/latexmkrc"
+          echo "latexmkrc content:"
+          cat "$GITHUB_WORKSPACE/latexmkrc"
 
       - id: action
         uses: .
@@ -29,12 +32,12 @@ jobs:
           format: pdf
           filename: main.tex
 
-      - name: Assert PDF was generated
+      - name: Assert PDF was generated with latexmkrc
         run: |
           echo "Checking for generated PDF..."
           ls -la "$GITHUB_WORKSPACE/" || true
           if [ ! -f "$GITHUB_WORKSPACE/main.pdf" ]; then
-            echo "FAIL: expected main.pdf to be generated but it was not found"
+            echo "FAIL: expected main.pdf to be generated with latexmkrc but it was not found"
             exit 1
           fi
-          echo "PASS: main.pdf was generated successfully"
+          echo "PASS: main.pdf was generated successfully using latexmkrc"

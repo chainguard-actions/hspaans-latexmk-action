@@ -1,5 +1,5 @@
 ---
-name: Test basic PDF compilation
+name: Test invalid format fails gracefully
 on:
   workflow_dispatch:
 jobs:
@@ -20,21 +20,22 @@ jobs:
           Hello, World! This is a test document for latexmk-action.
           \end{document}
           EOF
-          echo "Created main.tex:"
-          ls -la "$GITHUB_WORKSPACE/main.tex"
+          echo "Created main.tex"
 
       - id: action
         uses: .
         with:
-          format: pdf
+          format: dvi
           filename: main.tex
+        continue-on-error: true
 
-      - name: Assert PDF was generated
+      - name: Assert action failed for invalid format
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "Checking for generated PDF..."
-          ls -la "$GITHUB_WORKSPACE/" || true
-          if [ ! -f "$GITHUB_WORKSPACE/main.pdf" ]; then
-            echo "FAIL: expected main.pdf to be generated but it was not found"
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail with invalid format 'dvi' but outcome was '$OUTCOME'"
             exit 1
           fi
-          echo "PASS: main.pdf was generated successfully"
+          echo "PASS: action correctly failed for invalid format"

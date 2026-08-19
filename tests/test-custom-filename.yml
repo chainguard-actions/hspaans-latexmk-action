@@ -8,25 +8,33 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create minimal LaTeX file with custom name
+      - name: Write LaTeX source file with custom name to workspace root
         run: |
-          cat > "$GITHUB_WORKSPACE/document.tex" << 'EOF'
+          cat > "$GITHUB_WORKSPACE/article.tex" << 'EOF'
           \documentclass{article}
+          \title{Article Test Document}
+          \author{Test Author}
+          \date{\today}
           \begin{document}
-          Custom filename test.
+          \maketitle
+          Hello, World! This is an article test document for latexmk-action.
           \end{document}
           EOF
+          echo "Created article.tex:"
+          ls -la "$GITHUB_WORKSPACE/article.tex"
 
       - id: action
         uses: .
         with:
           format: pdf
-          filename: document.tex
+          filename: article.tex
 
-      - name: Assert PDF was generated with custom filename
+      - name: Assert PDF was generated for custom filename
         run: |
-          if [ ! -f "$GITHUB_WORKSPACE/document.pdf" ]; then
-            echo "FAIL: expected document.pdf to be generated"
+          echo "Checking for generated PDF..."
+          ls -la "$GITHUB_WORKSPACE/" || true
+          if [ ! -f "$GITHUB_WORKSPACE/article.pdf" ]; then
+            echo "FAIL: expected article.pdf to be generated but it was not found"
             exit 1
           fi
-          echo "PASS: document.pdf was generated"
+          echo "PASS: article.pdf was generated successfully"
